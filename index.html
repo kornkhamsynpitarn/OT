@@ -163,6 +163,8 @@ function deriveSchedule(raw){
     if(hol){ if(r.code==="H") owed.push(hol); }
     else if(r.code==="PH") out[k]={sub:owed.shift()||"holiday not matched", ot:!!r.ot};
     else if(r.code==="H") out[k]={off:true};
+    const lv={PL:"Personal Leave",AL:"Annual Leave",SL:"Sick Leave"}[r.code]; // green, cyan, magenta
+    if(lv) out[k]=Object.assign(out[k]||{}, {leave:lv});
     if(r.code==="OC") out[k]=Object.assign(out[k]||{}, {off:true, oc:true}); // yellow = office close
     if(r.shift) (out[k]=out[k]||{}).shift=r.shift;
   });
@@ -189,7 +191,7 @@ async function buildRows(emp, key){
   for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
     const k=iso(d), c=ci[k], s=sc[k]||{}, hol=PUBLIC_HOLIDAYS[k]||"";
     // Public holiday: Public Holiday box + holiday name. Substitute day: Personal Holiday box (+ Workday if checked in) + “Sub. <holiday>”.
-    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||!!s.oc||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:hol});
+    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||!!s.oc||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:[hol,s.leave].filter(Boolean).join(" / ")});
   }
   return rows;
 }
