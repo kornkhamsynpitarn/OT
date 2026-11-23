@@ -311,7 +311,14 @@ async function guard(btn,label,fn){
 async function rowsFor(emp,key){const sk=emp.id+"|"+key; if(!state[sk])state[sk]=await buildRows(emp,key); return state[sk];}
 
 /* ---------- Init ---------- */
-function init(){
+async function init(){
+  if(CHECKIN_RANGE_API_URL){ // live: staff list comes from the check-in Employees tab + the work schedule sheet
+    try{
+      const r=await fetch(CHECKIN_RANGE_API_URL+"?action=employees"), j=await r.json();
+      if(j.error) throw new Error(j.error);
+      if(j.length) EMPLOYEES.splice(0,EMPLOYEES.length,...j.map(e=>({id:e.nick.toLowerCase().replace(/\W+/g,"_"),name:e.name,nick:e.nick,pos:e.pos,empId:"",dept:""})));
+    }catch(err){ $("sheet").innerHTML='<p class="note">Couldn’t load the staff list: '+err.message+'</p>'; return; }
+  }
   const now=new Date(); let y=now.getFullYear(), m=now.getMonth()+(now.getDate()>=25?1:0); if(m>11){m=0;y++;}
   const cur=y+"-"+pad(m+1), opts=[];
   for(let i=0;i<12;i++){const d=new Date(2026,i,1);opts.push(`<option value="2026-${pad(i+1)}" ${("2026-"+pad(i+1))===cur?"selected":""}>${MONTHS[i]} 2026 (${fmt(periodOf("2026-"+pad(i+1)).from).slice(0,-5)} – ${fmt(periodOf("2026-"+pad(i+1)).to).slice(0,-5)})</option>`);}
