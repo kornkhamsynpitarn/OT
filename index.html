@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monthly OT Form – Syn Pitarn (SMSK) Branch</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕘</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;600&family=Kodchasan:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2A3D;--paper:#F6F2E8;--dim:#ECE5D4;--rule:#D8CDB4;--teal:#2F6F62;--brass:#A67C3D;--slate:#6B7686;--card:#fff;--rust:#B14A2C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#E8E4D8;--paper:#141D29;--dim:#1D2A3A;--rule:#33445A;--teal:#6FB7A5;--brass:#D1A663;--slate:#9AA7B8;--card:#1A2533;--rust:#E08A6D}}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 Inter,system-ui,sans-serif}
+header{padding:18px 24px;border-bottom:3px solid var(--brass);background:var(--card)}
+h1{font:600 20px Fraunces,Georgia,serif;margin:0}
+header p{margin:2px 0 0;color:var(--slate);font-size:12.5px}
+main{padding:18px 24px 40px;max-width:1180px;margin:0 auto}
+.bar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:end;margin-bottom:14px}
+.bar label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--slate)}
+select,input[type=time],input[type=text]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:6px 9px}
+button{font:600 13px Inter,sans-serif;border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:6px;padding:8px 13px;cursor:pointer}
+button.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+button:disabled{opacity:.55;cursor:wait}
+.sp{flex:1}
+.note{font-size:12px;color:var(--slate);background:var(--dim);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;margin:0 0 14px}
+.sum{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.sum div{background:var(--card);border:1px solid var(--rule);border-radius:8px;padding:8px 14px}
+.sum b{display:block;font:600 20px Fraunces,Georgia,serif}
+.sum span{font-size:11.5px;color:var(--slate)}
+.scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:#fff;padding:14px}
+/* The form itself stays paper-white in both themes so it prints and exports the same */
+.ot{font-family:Kodchasan,Inter,sans-serif;color:#111;background:#fff;min-width:820px;font-size:11px}
+.ot table{border-collapse:collapse;width:100%}
+.ot td,.ot th{border:1px solid #999;padding:2px 4px;text-align:center;height:21px}
+.ot .t{background:#C9DAF8;font:600 18px Kodchasan;border:1px solid #999;height:34px}
+.ot .l{background:#EFEFEF;font-weight:600;text-align:left}
+.ot .v{text-align:left;font-weight:600}
+.ot th{background:#EFEFEF;font-size:10px;white-space:pre-line}
+.ot th.h{background:#F4CCCC;font-size:9px}
+.ot td.dt{font-size:10.5px;white-space:nowrap}
+.ot td.cal{background:#D9D9D9;font-weight:600}
+.ot tr.off td.dt{background:#FFF2CC}
+.ot tr.pub td.dt{background:#F4CCCC}
+.ot .no{color:#888}.ot .ot-y{color:#0B6B3A;font-weight:600}
+.ot .sig td{border:0;text-align:left;height:24px;padding-top:6px}
+.ot input[type=time]{font:10px Kodchasan,sans-serif;padding:1px 2px;border:1px solid #ccc;background:#fff;color:#111;width:76px}
+.ot input[type=text]{font:10px Kodchasan,sans-serif;padding:1px 3px;border:1px solid #ccc;background:#fff;color:#111;width:90px}
+.ot input[type=checkbox]{accent-color:#2F6F62;width:14px;height:14px;margin:0}
+.cb{display:inline-block;width:11px;height:11px;border:1.2px solid #444;vertical-align:middle;position:relative}
+.cb.on{background:#2F6F62;border-color:#2F6F62}
+.cb.on::after{content:"";position:absolute;left:3px;top:0;width:3px;height:7px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
+#stage{position:fixed;left:-9999px;top:0;width:1060px;background:#fff}
+</style>
+</head>
+<body>
+<header>
+  <h1>Monthly OT Form</h1>
+  <p>Syn Pitarn (SMSK) Branch · form FM-HRM-005 · pay period runs from the 25th to the 24th</p>
+</header>
+<main>
+  <div class="bar">
+    <label>Pay period
+      <select id="period"></select>
+    </label>
+    <label>Employee
+      <select id="emp"></select>
+    </label>
+    <span class="sp"></span>
+    <button id="bXlsx" class="pri">Download Excel</button>
+    <button id="bPdf" class="pri">Download PDF</button>
+    <button id="bZip">Download everyone (ZIP)</button>
+  </div>
+  <p class="note" id="srcNote"></p>
+  <div class="sum" id="sum"></div>
+  <div class="scroll"><div id="sheet"></div></div>
+</main>
+<div id="stage"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+"use strict";
+/* ---------- Config (swap in real sources in the next step) ---------- */
+const CHECKIN_RANGE_API_URL = "https://script.google.com/macros/s/AKfycbwhv549_Ur4IpcO3Y3urb1oliYp2GVE4eaz48cvq7Jdk8ZsFYmxHfjbi67n9crzxmQj-w/exec"; // later: Apps Script action returning check-ins for a date range
+const NORMAL_HOURS = 9;           // from the template: OT = total hours − 9 (8 h work + 1 h break)
+const EMPLOYEES = [               // sample staff; the real list will come from the check-in Employees tab
+  {id:"ar",     name:"Chalermporn Matnak", nick:"Ar",     pos:"THLO", empId:"", dept:""},
+  {id:"kratae", name:"Kratae (sample)",    nick:"Kratae", pos:"THLO", empId:"", dept:""},
+  {id:"mike",   name:"Mike (sample)",      nick:"Mike",   pos:"MMLO", empId:"", dept:""}
+];
+const SCHEDULE_API_URL = "https://script.google.com/macros/s/AKfycbwhv549_Ur4IpcO3Y3urb1oliYp2GVE4eaz48cvq7Jdk8ZsFYmxHfjbi67n9crzxmQj-w/exec";     // later: Apps Script reading the 2026 Monthly Work Schedule sheet
+const OFF_DAY = {ar:1, kratae:2, mike:3}; // sample weekly day off (0 = Sun … 6 = Sat); the real one comes from the schedule sheet
+/* Signed Public Holidays 2026, “Branches” column (signed 1 Dec 2025). The HO column differs on 1 Jun and 7 Dec. */
+const PUBLIC_HOLIDAYS = {
+"2026-01-01":"New Year’s Day","2026-01-02":"Additional Special Holiday","2026-03-03":"Makha Bucha Day","2026-04-06":"Chakri Memorial Day",
+"2026-04-13":"Songkran Festival","2026-04-14":"Songkran Festival","2026-04-15":"Songkran Festival","2026-04-16":"SYN Holiday","2026-04-17":"SYN Holiday",
+"2026-05-01":"National Labour Day","2026-05-04":"Coronation Day","2026-06-03":"H.M. Queen’s Birthday","2026-07-28":"H.M. King’s Birthday","2026-07-29":"Asarnha Bucha Day",
+"2026-08-12":"Mother’s Day","2026-10-13":"H.M. King Bhumibol Memorial Day","2026-10-23":"King Chulalongkorn Day","2026-10-26":"SYN Holiday",
+"2026-12-05":"Father’s Day","2026-12-10":"Constitution Day","2026-12-31":"New Year’s Eve"};
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const fmt = d => d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear();
+const mins = t => { if(!t) return null; const p=t.split(":"); return +p[0]*60+ +p[1]; };
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const state = {}; // key "empId|YYYY-M" -> rows
+let busy = false;
+
+function periodOf(key){ // key "2026-11" => 25 Oct – 24 Nov
+  const y=+key.slice(0,4), m=+key.slice(5)-1;
+  return {from:new Date(y,m-1,25), to:new Date(y,m,24), label:(m+1)+"."+y};
+}
+function seeded(seed){ let s=seed; return ()=>{ s=(s*16807)%2147483647; return s/2147483647; }; }
+
+/* Sample check-ins. Replace this with a fetch to CHECKIN_RANGE_API_URL. */
+function sampleCheckins(emp, from, to){
+  const rnd = seeded(emp.id.length*977 + from.getMonth()*131 + from.getFullYear());
+  const sched = deriveSchedule(sampleSchedule(emp, from, to));
+  const out = {};
+  for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
+    const dow=d.getDay(), k=iso(d), forced=!!(sched[k]&&sched[k].sub&&sched[k].ot), rest=!!(sched[k]&&sched[k].sub&&!sched[k].ot);
+    const off = dow===OFF_DAY[emp.id] || rnd()<0.06 || (PUBLIC_HOLIDAYS[k] && rnd()<0.5);
+    if(rest || (off && !forced)) continue;
+    const inM = (dow===0||dow===6 ? 540 : 600) + (rnd()<0.5 ? Math.floor(rnd()*14) : -Math.floor(rnd()*20));
+    const extra = rnd()<0.28 ? Math.floor(rnd()*80) : (rnd()<0.1 ? -20 : 0);
+    const outM = inM + 540 + extra;
+    out[iso(d)] = {in:pad(Math.floor(inM/60))+":"+pad(inM%60), out:pad(Math.floor(outM/60))+":"+pad(outM%60)};
+  }
+  return out;
+}
+/* Work hours of the day (from the schedule sheet): Sat & Sun 09:00, other days 10:00; Shift A 09:00 / Shift B 10:00 when the schedule says so.
+   A check-in at or before start + 10 minutes counts as the start time. Check-out is used exactly as recorded. */
+function startOf(date, shift){ if(shift==="A") return 540; if(shift==="B") return 600; return (date.getDay()===0||date.getDay()===6) ? 540 : 600; }
+function roundIn(t, start){ const m=mins(t); if(m===null) return t; return m<=start+10 ? pad(start/60)+":"+pad(start%60) : t; }
+/* Sample schedule: a weekly day off, and a substitute day when that day off lands on a public holiday. */
+function sampleSchedule(emp, from, to){
+  const out={};
+  for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
+    const k=iso(d);
+    if(d.getDay()!==OFF_DAY[emp.id]) continue;
+    out[k]={code:"H"};
+    if(!PUBLIC_HOLIDAYS[k]) continue;
+    const n=new Date(d); n.setDate(n.getDate()+1);
+    while(n<=to && (n.getDay()===OFF_DAY[emp.id] || PUBLIC_HOLIDAYS[iso(n)])) n.setDate(n.getDate()+1);
+    if(n<=to) out[iso(n)]={code:"PH", ot:emp.id!=="kratae"};
+  }
+  return out;
+}
+/* Turns the raw schedule cells ({code, ot} per date, from 1 Jan) into form instructions.
+   H (blue) on a public holiday: that person is owed a substitute day (matched to later orange cells in date order).
+   PH (orange) on a date that is not a public holiday: their substitute day. OT in the cell = they work it, no OT = day off.
+   H (blue) on any other date: weekly day off. */
+function deriveSchedule(raw){
+  const out={}, owed=[];
+  Object.keys(raw).sort().forEach(k=>{
+    const r=raw[k], hol=PUBLIC_HOLIDAYS[k];
+    if(hol){ if(r.code==="H") owed.push(hol); }
+    else if(r.code==="PH") out[k]={sub:owed.shift()||"holiday not matched", ot:!!r.ot};
+    else if(r.code==="H") out[k]={off:true};
+    if(r.shift) (out[k]=out[k]||{}).shift=r.shift;
+  });
+  return out;
+}
+async function loadSchedule(emp, from, to){
+  let raw;
+  if(SCHEDULE_API_URL){ // needs the whole year so substitute days can be matched to the holiday they replace
+    const r = await fetch(SCHEDULE_API_URL+"?action=schedule&nick="+encodeURIComponent(emp.nick)+"&from="+iso(new Date(to.getFullYear(),0,1))+"&to="+iso(to));
+    raw = await r.json(); if(raw.error) throw new Error(raw.error); // expected: { "YYYY-MM-DD": {code:"H"|"PH"|"PL"|"AL"|"SL"|"CLOSE", ot:true|false, shift:"A"|"B" (optional)} }
+  } else raw = sampleSchedule(emp, from, to);
+  return deriveSchedule(raw);
+}
+async function loadCheckins(emp, from, to){
+  if(CHECKIN_RANGE_API_URL){
+    const r = await fetch(CHECKIN_RANGE_API_URL+"?action=checkins&nick="+encodeURIComponent(emp.nick)+"&from="+iso(from)+"&to="+iso(to));
+    const j = await r.json(); if(j.error) throw new Error(j.error);
+    return j; // { "YYYY-MM-DD": {in:"HH:MM", out:"HH:MM"} }
+  }
+  return sampleCheckins(emp, from, to);
+}
+async function buildRows(emp, key){
+  const {from,to} = periodOf(key), ci = await loadCheckins(emp, from, to), sc = await loadSchedule(emp, from, to), rows=[];
+  for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
+    const k=iso(d), c=ci[k], s=sc[k]||{}, hol=PUBLIC_HOLIDAYS[k]||"";
+    // Public holiday: Public Holiday box + holiday name. Substitute day: Personal Holiday box (+ Workday if checked in) + “Sub. <holiday>”.
+    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:hol});
+  }
+  return rows;
+}
+/* Same rules as the template: J = out−in, K = J−9, rate 1/1.5 on workdays, 2/3 on holidays */
+function calc(r){
+  const a=mins(r.in), b=mins(r.out);
+  const J = (a>0 && b!==null) ? (b-a)/60 : null;
+  const K = J!==null && J>1 ? Math.max(0, J-NORMAL_HOURS) : 0;
+  const hol = r.pub || r.per;
+  return {J, K, L:(hol||K>0)?"OT":"NO", M:hol?2:(r.work?1:0), N:hol?3:(r.work?1.5:0)};
+}
+const total = rows => rows.reduce((s,r)=>s+calc(r).K,0);
+const f2 = n => (Math.round(n*100)/100).toFixed(2);
+
+/* ---------- Form rendering ---------- */
+function formHTML(emp, key, rows, editable){
+  const p=periodOf(key), cb=(on,i,f)=> editable ? `<input type="checkbox" data-i="${i}" data-f="${f}" ${on?"checked":""} aria-label="${f}">` : `<i class="cb ${on?"on":""}"></i>`;
+  const body = rows.map((r,i)=>{
+    const c=calc(r);
+    return `<tr class="${r.pub?"pub":(r.per?"off":"")}"><td>${i+1}</td><td class="dt">${fmt(r.date)}</td>
+      <td>${cb(r.pub,i,"pub")}</td><td>${cb(r.per,i,"per")}</td><td>${cb(r.work,i,"work")}</td><td>${cb(r.sa,i,"sa")}</td><td>${cb(r.sb,i,"sb")}</td>
+      <td>${editable?`<input type="time" data-i="${i}" data-f="in" value="${r.in}">`:r.in}</td>
+      <td>${editable?`<input type="time" data-i="${i}" data-f="out" value="${r.out}">`:r.out}</td>
+      <td class="cal">${c.J===null?"":f2(c.J)}</td><td class="cal">${f2(c.K)}</td>
+      <td class="${c.L==="OT"?"ot-y":"no"}">${c.L}</td><td>${c.M}</td><td>${c.N}</td>
+      <td>${editable?`<input type="text" data-i="${i}" data-f="remark" value="${r.remark}">`:r.remark}</td></tr>`;
+  }).join("");
+  const sig = `<tr><td colspan="2" class="l">Report by :</td><td colspan="4" class="v">${emp.name}</td><td colspan="3" class="l">Recheck by :</td><td colspan="6">&nbsp;</td></tr>
+    <tr><td colspan="2" class="l">Date :</td><td colspan="4" class="v">${fmt(p.to)}</td><td colspan="3" class="l">Date :</td><td colspan="6" class="v">${fmt(p.to)}</td></tr>
+    <tr><td colspan="2" class="l">Approved by :</td><td colspan="4">&nbsp;</td><td colspan="3" class="l">Record by :</td><td colspan="6">&nbsp;</td></tr>
+    <tr><td colspan="2" class="l">Date :</td><td colspan="4" class="v">${fmt(p.to)}</td><td colspan="3" class="l">Date :</td><td colspan="6" class="v">${fmt(p.to)}</td></tr>`;
+  return `<div class="ot"><table>
+    <tr><td colspan="15" class="t">OT Calculation Form <span style="float:right;font-size:11px">FM-HRM-005</span></td></tr>
+    <tr><td colspan="2" class="l">From :</td><td colspan="5" class="v">${fmt(p.from)}</td><td colspan="2" class="l">To :</td><td colspan="6" class="v">${fmt(p.to)}</td></tr>
+    <tr><td colspan="2" class="l">Employee Name :</td><td colspan="5" class="v">${emp.name}</td><td colspan="2" class="l">Employee ID :</td><td colspan="6" class="v">${emp.empId}</td></tr>
+    <tr><td colspan="2" class="l">Position :</td><td colspan="5" class="v">${emp.pos}</td><td colspan="2" class="l">Department :</td><td colspan="6" class="v">${emp.dept}</td></tr>
+    <tr><th>List</th><th>Date</th><th class="h">Public\nHoliday</th><th>Personal\nHoliday</th><th>Workday</th><th>Shift A\n10:00-19:00</th><th>Shift B\n11:00-20:00</th><th>Check In</th><th>Check Out</th><th>Total\nHour</th><th>OT\nHour</th><th>OT\nY/N</th><th>Normal\nRate</th><th>OT\nRate</th><th>Remark</th></tr>
+    ${body}
+    <tr><td colspan="9" style="border:0"></td><td class="l">Total OT :</td><td class="cal" data-total>${f2(total(rows))}</td><td colspan="4" class="l">Hr.</td></tr>
+    ${sig}</table></div>`;
+}
+
+/* ---------- Screen ---------- */
+async function show(){
+  const key=$("period").value, emp=EMPLOYEES.find(e=>e.id===$("emp").value), sk=emp.id+"|"+key;
+  if(!state[sk]){ try{ state[sk]=await buildRows(emp,key); }catch(err){ $("sheet").innerHTML='<p class="note">Couldn’t load data: '+err.message+'</p>'; $("sum").innerHTML=""; return; } }
+  const rows=state[sk];
+  $("sheet").innerHTML=formHTML(emp,key,rows,true);
+  summary(rows);
+  $("sheet").querySelectorAll("[data-f]").forEach(el=>el.addEventListener("change",()=>{
+    const r=rows[+el.dataset.i], f=el.dataset.f;
+    r[f]= el.type==="checkbox" ? el.checked : el.value;
+    if(f==="in"||f==="out") r.work = !!(r.in && r.out) || r.work;
+    $("sheet").innerHTML=formHTML(emp,key,rows,true); summary(rows); rebind(emp,key,rows);
+  }));
+}
+function rebind(emp,key,rows){ // keep editing live after a re-render
+  $("sheet").querySelectorAll("[data-f]").forEach(el=>el.addEventListener("change",()=>{
+    const r=rows[+el.dataset.i], f=el.dataset.f; r[f]= el.type==="checkbox" ? el.checked : el.value;
+    $("sheet").innerHTML=formHTML(emp,key,rows,true); summary(rows); rebind(emp,key,rows);
+  }));
+}
+function summary(rows){
+  const days=rows.filter(r=>r.work).length, ot=rows.filter(r=>calc(r).K>0).length;
+  $("sum").innerHTML=`<div><b>${f2(total(rows))} h</b><span>Total OT this period</span></div><div><b>${days}</b><span>Days worked</span></div><div><b>${ot}</b><span>Days with OT</span></div><div><b>${rows.filter(r=>r.pub||r.per).length}</b><span>Holiday days</span></div>`;
+}
+
+/* ---------- Excel (same layout and formulas as the template) ---------- */
+async function xlsxBlob(emp,key,rows){
+  const p=periodOf(key), wb=new ExcelJS.Workbook(), ws=wb.addWorksheet("R "+p.label);
+  const font={name:"Kodchasan",size:10}, thin={style:"thin",color:{argb:"FF999999"}}, bd={top:thin,left:thin,bottom:thin,right:thin};
+  [6.4,12.6,7,7,8,11,11,8,8,8,8,7,8,8,13].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  const put=(a,v,o)=>{const c=ws.getCell(a);c.value=v;c.font=Object.assign({},font,o&&o.font);c.alignment={horizontal:(o&&o.h)||"center",vertical:"middle",wrapText:true};c.border=bd;if(o&&o.fill)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:o.fill}};if(o&&o.nf)c.numFmt=o.nf;return c;};
+  const lab={fill:"FFEFEFEF",font:{bold:true},h:"left"}, val={font:{bold:true},h:"left"};
+  ws.mergeCells("A1:N1"); put("A1","OT Calculation Form",{fill:"FFC9DAF8",font:{bold:true,size:18}}); put("O1","FM-HRM-005",{fill:"FFC9DAF8",font:{bold:true}}); ws.getRow(1).height=32;
+  ws.mergeCells("A2:B2");put("A2","From :",lab);ws.mergeCells("C2:G2");put("C2",p.from,Object.assign({nf:"d/m/yyyy"},val));ws.mergeCells("H2:I2");put("H2","To :",lab);ws.mergeCells("J2:O2");put("J2",p.to,Object.assign({nf:"d/m/yyyy"},val));
+  ws.mergeCells("A3:B3");put("A3","Employee Name :",lab);ws.mergeCells("C3:G3");put("C3",emp.name,val);ws.mergeCells("H3:I3");put("H3","Employee ID :",lab);ws.mergeCells("J3:O3");put("J3",emp.empId,val);
+  ws.mergeCells("A4:B4");put("A4","Position :",lab);ws.mergeCells("C4:G4");put("C4",emp.pos,val);ws.mergeCells("H4:I4");put("H4","Department :",lab);ws.mergeCells("J4:O4");put("J4",emp.dept,val);
+  ["List","Date","Public\nHoliday","Personal\nHoliday","Workday","Shift A\n10:00-19:00","Shift B\n11:00-20:00","Check In","Check Out","Total\nHour","OT\nHour","OT\nY/N","Normal\nRate","OT\nRate","Remark"].forEach((h,i)=>put(String.fromCharCode(65+i)+"6",h,{fill:i===2?"FFF4CCCC":"FFEFEFEF",font:{bold:true,size:9}}));
+  ws.getRow(6).height=34; ws.mergeCells("A5:O5");
+  const last=6+rows.length;
+  rows.forEach((r,i)=>{
+    const n=7+i, c=calc(r), t=s=>{const m=mins(s);return m===null?null:m/1440;};
+    put("A"+n,i+1);put("B"+n,r.date,{nf:"d/m/yyyy"});
+    put("C"+n,r.pub);put("D"+n,r.per);put("E"+n,r.work);put("F"+n,r.sa);put("G"+n,r.sb);
+    put("H"+n,t(r.in),{nf:"hh:mm"});put("I"+n,t(r.out),{nf:"hh:mm"});
+    put("J"+n,{formula:`IF($H${n}>0,(I${n}-H${n})*24,"")`,result:c.J===null?"":c.J},{nf:"#,##0.00",fill:"FFD9D9D9"});
+    put("K"+n,{formula:`IF(N(J${n})>1,MAX(0,J${n}-${NORMAL_HOURS}),0)`,result:c.K},{nf:"#,##0.00",fill:"FFD9D9D9"});
+    put("L"+n,{formula:`IF(OR($C${n}=TRUE,$D${n}=TRUE,$K${n}>0),"OT","NO")`,result:c.L});
+    put("M"+n,{formula:`IF(OR($C${n}=TRUE,$D${n}=TRUE),2,IF($E${n}=TRUE,1,0))`,result:c.M});
+    put("N"+n,{formula:`IF(OR($C${n}=TRUE,$D${n}=TRUE),3,IF($E${n}=TRUE,1.5,0))`,result:c.N});
+    put("O"+n,r.remark);
+  });
+  const tr=last+1; ws.getCell("A"+tr).border={}; put("J"+tr,"Total OT :",lab);
+  put("K"+tr,{formula:`SUM(K7:K${last})`,result:total(rows)},{nf:"#,##0.00",fill:"FFD9D9D9",font:{bold:true}}); ws.mergeCells("L"+tr+":M"+tr); put("L"+tr,"Hr.",lab);
+  const s=tr+2, d=p.to, sg=[["Report by :",emp.name,"Recheck by :",""],["Date :",d,"Date :",d],["Approved by :","","Record by :",""],["Date :",d,"Date :",d]];
+  sg.forEach((x,i)=>{const n=s+i;ws.mergeCells(`A${n}:B${n}`);ws.mergeCells(`C${n}:F${n}`);ws.mergeCells(`G${n}:I${n}`);ws.mergeCells(`J${n}:M${n}`);
+    put("A"+n,x[0],lab);put("C"+n,x[1],Object.assign({nf:"d/m/yyyy"},val));put("G"+n,x[2],lab);put("J"+n,x[3],Object.assign({nf:"d/m/yyyy"},val));});
+  ws.pageSetup={orientation:"portrait",fitToPage:true,fitToWidth:1,fitToHeight:1,paperSize:9};
+  ws.views=[{state:"frozen",ySplit:6}];
+  return new Blob([await wb.xlsx.writeBuffer()],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+
+/* ---------- PDF (rendered from the static form so every employee gets a clean A4 page) ---------- */
+async function pdfBlob(emp,key,rows){
+  const st=$("stage"); st.innerHTML=formHTML(emp,key,rows,false);
+  await document.fonts.ready;
+  const blob=await html2pdf().set({margin:8,image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#fff"},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(st.firstElementChild).outputPdf("blob");
+  st.innerHTML=""; return blob;
+}
+
+/* ---------- Downloads ---------- */
+const fname=(emp,key,ext)=>"OT_"+emp.nick+"_"+periodOf(key).label+"."+ext;
+function save(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}
+async function guard(btn,label,fn){
+  if(busy)return; busy=true; const old=btn.textContent; btn.textContent=label; document.querySelectorAll("button").forEach(b=>b.disabled=true);
+  try{await fn();}catch(e){alert("Couldn’t create the file: "+e.message);}
+  busy=false; btn.textContent=old; document.querySelectorAll("button").forEach(b=>b.disabled=false);
+}
+async function rowsFor(emp,key){const sk=emp.id+"|"+key; if(!state[sk])state[sk]=await buildRows(emp,key); return state[sk];}
+
+/* ---------- Init ---------- */
+function init(){
+  const now=new Date(); let y=now.getFullYear(), m=now.getMonth()+(now.getDate()>=25?1:0); if(m>11){m=0;y++;}
+  const cur=y+"-"+pad(m+1), opts=[];
+  for(let i=0;i<12;i++){const d=new Date(2026,i,1);opts.push(`<option value="2026-${pad(i+1)}" ${("2026-"+pad(i+1))===cur?"selected":""}>${MONTHS[i]} 2026 (${fmt(periodOf("2026-"+pad(i+1)).from).slice(0,-5)} – ${fmt(periodOf("2026-"+pad(i+1)).to).slice(0,-5)})</option>`);}
+  $("period").innerHTML=opts.join(""); if(!$("period").value) $("period").selectedIndex=10;
+  $("emp").innerHTML=EMPLOYEES.map(e=>`<option value="${e.id}">${e.nick} – ${e.pos}</option>`).join("");
+  $("srcNote").textContent = CHECKIN_RANGE_API_URL ? "Check-in times are loaded from the staff check-in app. Tick boxes or edit times below if anything needs correcting." : "Sample data: check-in times, days off and substitute days are made up so you can test the rules. Public holidays come from the signed 2026 list. A check-in at or before 10 minutes after the day’s start (Sat & Sun 09:00, other days 10:00) counts as the start time; check-out is used as recorded.";
+  $("period").onchange=$("emp").onchange=show;
+  $("bXlsx").onclick=e=>guard(e.target,"Creating Excel…",async()=>{const emp=EMPLOYEES.find(x=>x.id===$("emp").value),key=$("period").value;save(await xlsxBlob(emp,key,await rowsFor(emp,key)),fname(emp,key,"xlsx"));});
+  $("bPdf").onclick=e=>guard(e.target,"Creating PDF…",async()=>{const emp=EMPLOYEES.find(x=>x.id===$("emp").value),key=$("period").value;save(await pdfBlob(emp,key,await rowsFor(emp,key)),fname(emp,key,"pdf"));});
+  $("bZip").onclick=e=>guard(e.target,"Building ZIP…",async()=>{const key=$("period").value,z=new JSZip();
+    for(const emp of EMPLOYEES){const rows=await rowsFor(emp,key);z.file(fname(emp,key,"xlsx"),await xlsxBlob(emp,key,rows));z.file(fname(emp,key,"pdf"),await pdfBlob(emp,key,rows));}
+    save(await z.generateAsync({type:"blob"}),"OT_all_"+periodOf(key).label+".zip");});
+  show();
+}
+init();
+})();
+</script>
+</body>
+</html>
