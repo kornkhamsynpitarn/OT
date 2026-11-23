@@ -113,6 +113,9 @@ const mins = t => { if(!t) return null; const p=t.split(":"); return +p[0]*60+ +
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const state = {}; // key "empId|YYYY-M" -> rows
 let busy = false;
+/* Settings from the main site: ?embed=1 (inside the portal), ?edit=1 (branch manager only), ?nick=Ar (who to show first) */
+const Q = new URLSearchParams(location.search);
+const CAN_EDIT = Q.get("edit") === "1", EMBED = Q.get("embed") === "1", WANT = (Q.get("nick") || "").trim().toLowerCase();
 
 function periodOf(key){ // key "2026-11" => 25 Oct – 24 Nov
   const y=+key.slice(0,4), m=+key.slice(5)-1;
@@ -211,6 +214,7 @@ const f2 = n => (Math.round(n*100)/100).toFixed(2);
 
 /* ---------- Form rendering ---------- */
 function formHTML(emp, key, rows, editable){
+  editable = editable && CAN_EDIT;
   const p=periodOf(key), cb=(on,i,f)=> editable ? `<input type="checkbox" data-i="${i}" data-f="${f}" ${on?"checked":""} aria-label="${f}">` : `<i class="cb ${on?"on":""}"></i>`;
   const body = rows.map((r,i)=>{
     const c=calc(r);
@@ -331,6 +335,9 @@ async function init(){
   $("period").innerHTML=opts.join(""); if(!$("period").value) $("period").selectedIndex=10;
   $("emp").innerHTML=EMPLOYEES.map(e=>`<option value="${e.id}">${e.nick} – ${e.pos}</option>`).join("");
   $("srcNote").textContent = CHECKIN_RANGE_API_URL ? "Check-in times are loaded from the staff check-in app. Tick boxes or edit times below if anything needs correcting." : "Sample data: check-in times, days off and substitute days are made up so you can test the rules. Public holidays come from the signed 2026 list. A check-in at or before 10 minutes after the day’s start (Sat & Sun 09:00, other days 10:00) counts as the start time; check-out is used as recorded.";
+  const mine=EMPLOYEES.find(e=>e.nick.toLowerCase()===WANT); if(mine) $("emp").value=mine.id;
+  if(!CAN_EDIT){ $("bZip").style.display="none"; $("srcNote").textContent+=" View only: only the branch manager can change this form."; }
+  if(EMBED){ document.querySelector("header").style.display="none"; document.querySelector("main").style.padding="0"; if(window.parent!==window) new ResizeObserver(()=>parent.postMessage({otHeight:document.documentElement.scrollHeight},"*")).observe(document.body); }
   $("period").onchange=$("emp").onchange=show;
   $("bXlsx").onclick=e=>guard(e.target,"Creating Excel…",async()=>{const emp=EMPLOYEES.find(x=>x.id===$("emp").value),key=$("period").value;save(await xlsxBlob(emp,key,await rowsFor(emp,key)),fname(emp,key,"xlsx"));});
   $("bPdf").onclick=e=>guard(e.target,"Creating PDF…",async()=>{const emp=EMPLOYEES.find(x=>x.id===$("emp").value),key=$("period").value;save(await pdfBlob(emp,key,await rowsFor(emp,key)),fname(emp,key,"pdf"));});
