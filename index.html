@@ -93,6 +93,7 @@ const EMPLOYEES = [               // sample staff; the real list will come from 
   {id:"mike",   name:"Mike (sample)",      nick:"Mike",   pos:"MMLO", empId:"", dept:""}
 ];
 const SCHEDULE_API_URL = "https://script.google.com/macros/s/AKfycbwhv549_Ur4IpcO3Y3urb1oliYp2GVE4eaz48cvq7Jdk8ZsFYmxHfjbi67n9crzxmQj-w/exec";     // later: Apps Script reading the 2026 Monthly Work Schedule sheet
+const SHEET_COLORS = {H:"#6D9EEB", PH:"#FF9900", PL:"#00FF00", AL:"#00FFFF", SL:"#FF00FF", OC:"#FFFF00"}; // same colours as the work schedule legend
 const OFF_DAY = {ar:1, kratae:2, mike:3}; // sample weekly day off (0 = Sun … 6 = Sat); the real one comes from the schedule sheet
 /* Signed Public Holidays 2026, “Branches” column (signed 1 Dec 2025). The HO column differs on 1 Jun and 7 Dec. */
 const PUBLIC_HOLIDAYS = {
@@ -166,6 +167,7 @@ function deriveSchedule(raw){
     const lv={PL:"Personal Leave",AL:"Annual Leave",SL:"Sick Leave"}[r.code]; // green, cyan, magenta
     if(lv) out[k]=Object.assign(out[k]||{}, {leave:lv});
     if(r.code==="OC") out[k]=Object.assign(out[k]||{}, {off:true, oc:true}); // yellow = office close
+    if(r.code) (out[k]=out[k]||{}).code=r.code;
     if(r.shift) (out[k]=out[k]||{}).shift=r.shift;
   });
   return out;
@@ -191,7 +193,7 @@ async function buildRows(emp, key){
   for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
     const k=iso(d), c=ci[k], s=sc[k]||{}, hol=PUBLIC_HOLIDAYS[k]||"";
     // Public holiday: Public Holiday box + holiday name. Substitute day: Personal Holiday box (+ Workday if checked in) + “Sub. <holiday>”.
-    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||!!s.oc||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:[hol,s.leave].filter(Boolean).join(" / ")});
+    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||!!s.oc||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:[hol,s.leave].filter(Boolean).join(" / "), code:s.code||""});
   }
   return rows;
 }
@@ -217,7 +219,7 @@ function formHTML(emp, key, rows, editable){
       <td>${editable?`<input type="time" data-i="${i}" data-f="out" value="${r.out}">`:r.out}</td>
       <td class="cal">${c.J===null?"":f2(c.J)}</td><td class="cal">${f2(c.K)}</td>
       <td class="${c.L==="OT"?"ot-y":"no"}">${c.L}</td><td>${c.M}</td><td>${c.N}</td>
-      <td>${editable?`<input type="text" data-i="${i}" data-f="remark" value="${r.remark}">`:r.remark}</td></tr>`;
+      <td${SHEET_COLORS[r.code]&&!editable?` style="background:${SHEET_COLORS[r.code]}"`:""}>${editable?`<input type="text" data-i="${i}" data-f="remark" value="${r.remark}"${SHEET_COLORS[r.code]?` style="background:${SHEET_COLORS[r.code]}"`:""}>`:r.remark}</td></tr>`;
   }).join("");
   const sig = `<tr><td colspan="2" class="l">Report by :</td><td colspan="4" class="v">${emp.name}</td><td colspan="3" class="l">Recheck by :</td><td colspan="6">&nbsp;</td></tr>
     <tr><td colspan="2" class="l">Date :</td><td colspan="4" class="v">${fmt(p.to)}</td><td colspan="3" class="l">Date :</td><td colspan="6" class="v">${fmt(p.to)}</td></tr>
@@ -283,7 +285,7 @@ async function xlsxBlob(emp,key,rows){
     put("L"+n,{formula:`IF(OR($C${n}=TRUE,$D${n}=TRUE,$K${n}>0),"OT","NO")`,result:c.L});
     put("M"+n,{formula:`IF(OR($C${n}=TRUE,$D${n}=TRUE),2,IF($E${n}=TRUE,1,0))`,result:c.M});
     put("N"+n,{formula:`IF(OR($C${n}=TRUE,$D${n}=TRUE),3,IF($E${n}=TRUE,1.5,0))`,result:c.N});
-    put("O"+n,r.remark);
+    put("O"+n,r.remark,SHEET_COLORS[r.code]?{fill:"FF"+SHEET_COLORS[r.code].slice(1)}:undefined);
   });
   const tr=last+1; ws.getCell("A"+tr).border={}; put("J"+tr,"Total OT :",lab);
   put("K"+tr,{formula:`SUM(K7:K${last})`,result:total(rows)},{nf:"#,##0.00",fill:"FFD9D9D9",font:{bold:true}}); ws.mergeCells("L"+tr+":M"+tr); put("L"+tr,"Hr.",lab);
