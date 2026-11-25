@@ -81,6 +81,8 @@ button:disabled{opacity:.55;cursor:wait}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -306,8 +308,17 @@ async function xlsxBlob(emp,key,rows){
 async function pdfBlob(emp,key,rows){
   const st=$("stage"); st.innerHTML=formHTML(emp,key,rows,false);
   await document.fonts.ready;
-  const blob=await html2pdf().set({margin:8,image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#fff",windowWidth:1100,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(st.firstElementChild).outputPdf("blob");
-  st.innerHTML=""; return blob;
+  const canvas=await html2canvas(st,{
+    scale:2, backgroundColor:"#fff", windowWidth:1100, scrollX:0, scrollY:0,
+    onclone:d=>{const s=d.getElementById("stage"); s.style.position="absolute"; s.style.left="0"; s.style.top="0";}
+  });
+  st.innerHTML="";
+  const {jsPDF}=window.jspdf, pdf=new jsPDF({unit:"mm",format:"a4",orientation:"portrait"});
+  const pw=210, ph=297, m=8, maxW=pw-2*m, maxH=ph-2*m;
+  let w=maxW, h=canvas.height/canvas.width*w;
+  if(h>maxH){ h=maxH; w=canvas.width/canvas.height*h; } // never overflow the page
+  pdf.addImage(canvas.toDataURL("image/jpeg",0.96),"JPEG",(pw-w)/2,m,w,h);
+  return pdf.output("blob");
 }
 
 /* ---------- Downloads ---------- */
