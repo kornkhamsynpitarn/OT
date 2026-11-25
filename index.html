@@ -51,7 +51,7 @@ button:disabled{opacity:.55;cursor:wait}
 .cb{display:inline-block;width:11px;height:11px;border:1.2px solid #444;vertical-align:middle;position:relative}
 .cb.on{background:#2F6F62;border-color:#2F6F62}
 .cb.on::after{content:"";position:absolute;left:3px;top:0;width:3px;height:7px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
-#stage{position:fixed;left:-9999px;top:0;width:1060px;background:#fff}
+#stage{position:fixed;left:-9999px;top:0;width:1100px;background:#fff}
 </style>
 </head>
 <body>
@@ -270,7 +270,7 @@ function summary(rows){
 async function xlsxBlob(emp,key,rows){
   const p=periodOf(key), wb=new ExcelJS.Workbook(), ws=wb.addWorksheet("R "+p.label);
   const font={name:"Kodchasan",size:10}, thin={style:"thin",color:{argb:"FF999999"}}, bd={top:thin,left:thin,bottom:thin,right:thin};
-  [6.4,12.6,7,7,8,11,11,8,8,8,8,7,8,8,13].forEach((w,i)=>ws.getColumn(i+1).width=w);
+  [6.4,12.6,7,7,8,11,11,8,8,8,8,7,8,8,34].forEach((w,i)=>ws.getColumn(i+1).width=w);
   const put=(a,v,o)=>{const c=ws.getCell(a);c.value=v;c.font=Object.assign({},font,o&&o.font);c.alignment={horizontal:(o&&o.h)||"center",vertical:"middle",wrapText:true};c.border=bd;if(o&&o.fill)c.fill={type:"pattern",pattern:"solid",fgColor:{argb:o.fill}};if(o&&o.nf)c.numFmt=o.nf;return c;};
   const lab={fill:"FFEFEFEF",font:{bold:true},h:"left"}, val={font:{bold:true},h:"left"};
   ws.mergeCells("A1:N1"); put("A1","OT Calculation Form",{fill:"FFC9DAF8",font:{bold:true,size:18}}); put("O1","FM-HRM-005",{fill:"FFC9DAF8",font:{bold:true}}); ws.getRow(1).height=32;
@@ -306,7 +306,7 @@ async function xlsxBlob(emp,key,rows){
 async function pdfBlob(emp,key,rows){
   const st=$("stage"); st.innerHTML=formHTML(emp,key,rows,false);
   await document.fonts.ready;
-  const blob=await html2pdf().set({margin:8,image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#fff"},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(st.firstElementChild).outputPdf("blob");
+  const blob=await html2pdf().set({margin:8,image:{type:"jpeg",quality:.96},html2canvas:{scale:2,backgroundColor:"#fff",windowWidth:1100,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(st.firstElementChild).outputPdf("blob");
   st.innerHTML=""; return blob;
 }
 
