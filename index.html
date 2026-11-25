@@ -85,14 +85,14 @@ button:disabled{opacity:.55;cursor:wait}
 (function(){
 "use strict";
 /* ---------- Config (swap in real sources in the next step) ---------- */
-const CHECKIN_RANGE_API_URL = "https://script.google.com/macros/s/AKfycbxHq_Yypk7q31CbWDPQpGNweg5a5tF88K2oPZ6y7h2lofaFgJIVmmv47Vcq3T1JjTbW/exec?action=checkins&nick=Ar&from=2026-10-25&to=2026-11-24"; // later: Apps Script action returning check-ins for a date range
+const CHECKIN_RANGE_API_URL = "https://script.google.com/macros/s/AKfycbxHq_Yypk7q31CbWDPQpGNweg5a5tF88K2oPZ6y7h2lofaFgJIVmmv47Vcq3T1JjTbW/exec"; // later: Apps Script action returning check-ins for a date range
 const NORMAL_HOURS = 9;           // from the template: OT = total hours − 9 (8 h work + 1 h break)
 const EMPLOYEES = [               // sample staff; the real list will come from the check-in Employees tab
   {id:"ar",     name:"Chalermporn Matnak", nick:"Ar",     pos:"THLO", empId:"", dept:""},
   {id:"kratae", name:"Kratae (sample)",    nick:"Kratae", pos:"THLO", empId:"", dept:""},
   {id:"mike",   name:"Mike (sample)",      nick:"Mike",   pos:"MMLO", empId:"", dept:""}
 ];
-const SCHEDULE_API_URL = "https://script.google.com/macros/s/AKfycbxHq_Yypk7q31CbWDPQpGNweg5a5tF88K2oPZ6y7h2lofaFgJIVmmv47Vcq3T1JjTbW/exec?action=checkins&nick=Ar&from=2026-10-25&to=2026-11-24";     // later: Apps Script reading the 2026 Monthly Work Schedule sheet
+const SCHEDULE_API_URL = "https://script.google.com/macros/s/AKfycbxHq_Yypk7q31CbWDPQpGNweg5a5tF88K2oPZ6y7h2lofaFgJIVmmv47Vcq3T1JjTbW/exec";     // later: Apps Script reading the 2026 Monthly Work Schedule sheet
 const SHEET_COLORS = {H:"#6D9EEB", PH:"#FF9900", PL:"#00FF00", AL:"#00FFFF", SL:"#FF00FF", OC:"#FFFF00"}; // same colours as the work schedule legend
 const remarkColor = r => (r.remark && String(r.remark).trim()) ? (SHEET_COLORS[r.code] || "") : ""; // colour only when the Remark has text
 const OFF_DAY = {ar:1, kratae:2, mike:3}; // sample weekly day off (0 = Sun … 6 = Sat); the real one comes from the schedule sheet
