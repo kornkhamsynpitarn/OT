@@ -143,7 +143,15 @@ function sampleCheckins(emp, from, to){
 }
 /* Work hours of the day (from the schedule sheet): Sat & Sun 09:00, other days 10:00; Shift A 09:00 / Shift B 10:00 when the schedule says so.
    A check-in at or before start + 10 minutes counts as the start time. Check-out is used exactly as recorded. */
-function startOf(date, shift){ if(shift==="A") return 540; if(shift==="B") return 600; return (date.getDay()===0||date.getDay()===6) ? 540 : 600; }
+/* Staff with fixed 09:00 start days (nickname in lowercase -> days of the month) */
+const SPECIAL_START = { gate: [10, 25] };
+function startOf(date, shift, emp){
+  if(shift==="A") return 540;
+  if(shift==="B") return 600;
+  const days = emp && SPECIAL_START[String(emp.nick).toLowerCase()];
+  if(days && days.indexOf(date.getDate()) >= 0) return 540; // 09:00 on these days, even on weekdays
+  return (date.getDay()===0||date.getDay()===6) ? 540 : 600;
+}
 function roundIn(t, start){ const m=mins(t); if(m===null) return t; return m<=start+10 ? pad(start/60)+":"+pad(start%60) : t; }
 /* Sample schedule: a weekly day off, and a substitute day when that day off lands on a public holiday. */
 function sampleSchedule(emp, from, to){
@@ -199,7 +207,7 @@ async function buildRows(emp, key){
   for(let d=new Date(from); d<=to; d.setDate(d.getDate()+1)){
     const k=iso(d), c=ci[k], s=sc[k]||{}, hol=PUBLIC_HOLIDAYS[k]||"";
     // Public holiday: Public Holiday box + holiday name. Substitute day: Personal Holiday box (+ Workday if checked in) + “Sub. <holiday>”.
-    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||!!s.oc||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:[hol,s.leave].filter(Boolean).join(" / "), code:s.code||""});
+    rows.push({date:new Date(d), pub:!!hol, per:!!s.sub||!!s.oc||(!!s.off&&!hol), work:!!c, sa:s.shift==="A", sb:s.shift==="B", in:c?roundIn(c.in,startOf(d,s.shift,emp)):"", out:c?c.out:"", remark:s.sub?"Sub. "+s.sub:[hol,s.leave].filter(Boolean).join(" / "), code:s.code||""});
   }
   return rows;
 }
